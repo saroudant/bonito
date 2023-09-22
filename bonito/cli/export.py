@@ -119,6 +119,8 @@ def to_guppy_feed_forward(layer):
 
 
 def to_guppy_dict(model, include_weights=True, binary_weights=True, v4=True):
+    print('ENCODER:', flush=True)
+    print(model.encoder, flush=True)
     guppy_dict = bonito.nn.to_dict(model.encoder, include_weights=include_weights)
     guppy_dict['sublayers'] = [x for x in guppy_dict['sublayers'] if x['type'] != 'permute']
     guppy_dict['sublayers'] = [dict(x, type='LSTM', activation='tanh', gate='sigmoid') if x['type'] == 'lstm' else x for x in guppy_dict['sublayers']]

@@ -71,6 +71,17 @@ def main(args):
     loader_kwargs = {
         "batch_size": args.batch, "num_workers": 4, "pin_memory": True
     }
+    # SM: Remove from train and valid the sequences with length 0
+    train_is_non_zero = np.where(train_loader_kwargs['dataset'].lengths > 0)
+    train_loader_kwargs['dataset'].lengths = train_loader_kwargs['dataset'].lengths[train_is_non_zero]
+    train_loader_kwargs['dataset'].targets = train_loader_kwargs['dataset'].targets[train_is_non_zero]
+    train_loader_kwargs['dataset'].chunks = train_loader_kwargs['dataset'].chunks[train_is_non_zero]
+
+    valid_is_non_zero = np.where(valid_loader_kwargs['dataset'].lengths > 0)
+    valid_loader_kwargs['dataset'].lengths = valid_loader_kwargs['dataset'].lengths[valid_is_non_zero]
+    valid_loader_kwargs['dataset'].targets = valid_loader_kwargs['dataset'].targets[valid_is_non_zero]
+    valid_loader_kwargs['dataset'].chunks = valid_loader_kwargs['dataset'].chunks[valid_is_non_zero]
+
     train_loader = DataLoader(**loader_kwargs, **train_loader_kwargs)
     valid_loader = DataLoader(**loader_kwargs, **valid_loader_kwargs)
 

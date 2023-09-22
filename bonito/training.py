@@ -185,6 +185,7 @@ class Trainer:
     def validate_one_step(self, batch):
         data, targets, lengths, *args = batch
         scores = self.model(data.to(self.device), *(x.to(self.device) for x in args))
+
         losses = self.criterion(scores, targets.to(self.device), lengths.to(self.device))
         losses = {k: v.item() for k, v in losses.items()} if isinstance(losses, dict) else losses.item()
         if hasattr(self.model, 'decode_batch'):
@@ -200,6 +201,7 @@ class Trainer:
 
         accs = [
             accuracy(ref, seq, min_coverage=0.5) if len(seq) else 0. for ref, seq in zip(refs, seqs)
+            if len(ref) > 0
         ]
         return seqs, refs, accs, losses
 
